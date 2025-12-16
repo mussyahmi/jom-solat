@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { formatPrayerDates, formatTime } from "@/utils/format";
 import { Skeleton } from "@/components/ui/skeleton";
+import Footer from "@/components/Footer";
 
 type PrayerTimes = {
   subuh: string;
@@ -138,9 +139,7 @@ export default function HomePage() {
       </div>
 
       {/* Footer */}
-      <footer className="text-xs text-gray-400 dark:text-gray-500 mt-6">
-        Data waktu solat Malaysia
-      </footer>
+      <Footer />
     </div>
   );
 }
