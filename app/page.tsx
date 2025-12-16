@@ -192,14 +192,21 @@ function parseTime(time: string) {
 function formatCountdown(target: Date) {
   const now = new Date();
   let diff = Math.max(target.getTime() - now.getTime(), 0);
+
   const hours = Math.floor(diff / (1000 * 60 * 60));
   diff -= hours * 1000 * 60 * 60;
+
   const minutes = Math.floor(diff / (1000 * 60));
   diff -= minutes * 1000 * 60;
+
   const seconds = Math.floor(diff / 1000);
-  return `${hours.toString().padStart(2, "0")} jam ${minutes
-    .toString()
-    .padStart(2, "0")} minit ${seconds.toString().padStart(2, "0")} saat`;
+
+  let parts: string[] = [];
+  if (hours > 0) parts.push(`${hours.toString().padStart(2, "0")} jam`);
+  if (minutes > 0) parts.push(`${minutes.toString().padStart(2, "0")} minit`);
+  parts.push(`${seconds.toString().padStart(2, "0")} saat`);
+
+  return parts.join(" ");
 }
 
 function capitalize(str: string) {
