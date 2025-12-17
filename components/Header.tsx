@@ -34,7 +34,6 @@ export default function Header() {
                 Pantau waktu solat harian di Malaysia termasuk tarikh Miladi & Hijri, jadual lengkap solat untuk semua zon dengan MariSolat.
               </SheetDescription>
             </SheetHeader>
-            <Separator />
             <nav className="grid flex-1 auto-rows-min gap-3 px-4">
               <Link href="/">Waktu Solat</Link>
               <Link href="/rukun-solat">Rukun Solat</Link>
