@@ -247,7 +247,7 @@ export default function HomePage() {
             <CardContent className="text-center">
               <p className="font-semibold">Satu Pertiga Malam Terakhir</p>
               <div className="text-2xl font-bold text-gray-500 dark:text-gray-400 flex items-center justify-center">
-                {allTimes.today ? lastThird.end : <Skeleton className="h-7 w-16 mx-2" />} AM - {allTimes.today ? lastThird.end : <Skeleton className="h-7 w-16 mx-2" />} AM
+                {allTimes.today ? lastThird.start : <Skeleton className="h-7 w-16 mx-2" />} AM - {allTimes.today ? lastThird.end : <Skeleton className="h-7 w-16 mx-2" />} AM
               </div>
 
               <Dialog>
