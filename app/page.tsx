@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { formatPrayerDates, formatTime } from "@/utils/format";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import {
@@ -16,6 +16,12 @@ import {
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
+
+type Prayer = {
+  label: keyof PrayerTimes | null;
+  time: Date | null;
+}
 
 type PrayerTimes = {
   subuh: string;
@@ -34,12 +40,27 @@ type PrayerDataByDay = {
   tomorrow?: PrayerTimes;
 };
 
+type SolatCategory = {
+  title: string;
+  description: string;
+};
+
+const KATEGORI_SOLAT: SolatCategory[] = [
+  { title: 'Waktu Fadhilat', description: 'Waktu paling awal lepas azan paling banyak pahala.' },
+  { title: 'Waktu Ikhtiar', description: '15 minit selepas azan waktu yang kita boleh pilih.' },
+  { title: 'Waktu Jawaz', description: 'Waktu yang harus kita sembahyang. Contoh, solat Zuhur pada 3.30, waktu harus bukan haram.' },
+  { title: 'Waktu Karahah (waktu makruh)', description: '15 minit lagi nak masuk waktu solat lain. Pemilihan waktu ini dibenci oleh Allah SWT jika disengajakan.' },
+  { title: 'Waktu Tahrim (waktu haram)', description: 'Hampir masuk waktu lain baru nak takbir. Perbuatan melambatkan waktu solat itu yang haram, namun sembahyangnya tidak haram.' },
+];
+
 export default function HomePage() {
   const [zone, setZone] = useState<string | null>(null);
   const [allTimes, setAllTimes] = useState<PrayerDataByDay>({});
   const [selectedDay, setSelectedDay] = useState<"yesterday" | "today" | "tomorrow">("today");
-  const [nextPrayer, setNextPrayer] = useState<keyof PrayerTimes | null>(null);
   const [countdown, setCountdown] = useState("");
+  const [currentPrayer, setCurrentPrayer] = useState<Prayer>({ label: null, time: null });
+  const [nextPrayer, setNextPrayer] = useState<Prayer>({ label: null, time: null });
+  const [currentSolatCategory, setCurrentSolatCategory] = useState("");
 
   useEffect(() => {
     requestLocation();
@@ -112,7 +133,7 @@ export default function HomePage() {
 
   const updateNextPrayer = () => {
     if (selectedDay == "yesterday") {
-      setNextPrayer(null);
+      setNextPrayer({ label: null, time: null });
       setCountdown("");
       return;
     }
@@ -130,39 +151,66 @@ export default function HomePage() {
       { label: "isyak", time: times.isyak },
     ];
 
-    let next: keyof PrayerTimes | null = null;
-    let targetTime: Date | null = null;
+    let currentLabel, nextLabel: keyof PrayerTimes | null = null;
+    let currentTime, nextTime: Date | null = null;
 
     for (const p of prayers) {
       const t = parseTime(p.time);
       if (t > now) {
-        next = p.label;
-        targetTime = t;
+        nextLabel = p.label;
+        nextTime = t;
         break;
       }
+
+      currentLabel = p.label;
+      currentTime = t;
     }
 
-    if (!next) {
-      next = "subuh";
-      targetTime = parseTime(allTimes.today!.subuh);
-      targetTime.setDate(targetTime.getDate() + 1);
+    if (!nextLabel) {
+      nextLabel = "subuh";
+      nextTime = parseTime(allTimes.today!.subuh);
+      nextTime.setDate(nextTime.getDate() + 1);
 
       if (selectedDay == "today") {
-        setNextPrayer(null);
+        setNextPrayer({ label: null, time: null });
         setCountdown("");
         return;
       }
     } else {
       if (selectedDay == "tomorrow") {
-        setNextPrayer(null);
+        setNextPrayer({ label: null, time: null });
         setCountdown("");
         return;
       }
     }
 
-    setNextPrayer(next);
-    if (targetTime) setCountdown(formatCountdown(targetTime));
+    setNextPrayer({ label: nextLabel, time: nextTime });
+    setCurrentPrayer({ label: currentLabel!, time: currentTime! });
+    updateCurrentSolatCategory(currentTime!, nextTime!);
+
+    if (nextTime) setCountdown(formatCountdown(nextTime));
   };
+
+  const updateCurrentSolatCategory = (start: Date, end: Date) => {
+    const now = new Date();
+
+    const total = end.getTime() - start.getTime();
+    const elapsed = now.getTime() - start.getTime();
+    const remaining = end.getTime() - now.getTime();
+
+    const fadhilat = 15 * 60 * 1000;
+    const karahah = 15 * 60 * 1000;
+    const tahrim = 5 * 60 * 1000;
+
+    let solatCategory = "Waktu Jawaz";
+
+    if (elapsed <= fadhilat) solatCategory = "Waktu Fadhilat";
+    if (remaining <= tahrim) solatCategory = "Waktu Tahrim";
+    if (remaining <= karahah) solatCategory = "Waktu Karahah";
+    if (elapsed <= total / 2) solatCategory = "Waktu Ikhtiar";
+
+    setCurrentSolatCategory(solatCategory)
+  }
 
   const currentTimes = allTimes[selectedDay];
 
@@ -234,10 +282,41 @@ export default function HomePage() {
             key={label}
             label={capitalize(label)}
             value={currentTimes ? currentTimes[label as keyof PrayerTimes] : undefined}
-            highlight={selectedDay === "today" && nextPrayer === label}
-            countdown={selectedDay === "today" && nextPrayer === label ? countdown : undefined}
+            highlight={selectedDay === "today" && nextPrayer.label === label}
+            countdown={selectedDay === "today" && nextPrayer.label === label ? countdown : undefined}
           />
         ))}
+      </div>
+
+      <div className="w-full max-w-md">
+        <Separator />
+      </div>
+
+      {/* Solat Category */}
+      <div className="w-full max-w-md text-sm text-gray-600 dark:text-gray-300 text-center">
+        Anda kini berada dalam waktu solat:
+        <div className="font-semibold flex justify-center items-center">
+          {currentPrayer.label ? capitalize(currentPrayer.label) : <Skeleton className="h-4 w-16" />}
+        </div>
+        Kategori waktu sekarang adalah seperti di bawah.
+      </div>
+
+      <div className="w-full max-w-md space-y-3">
+        {KATEGORI_SOLAT.map((item) => (
+          <Card key={item.title} className={`${currentSolatCategory == item.title
+            ? "bg-yellow-100 dark:bg-yellow-700 font-semibold border-l-4 border-yellow-500 dark:border-yellow-300"
+            : ""
+            }`}>
+            <CardHeader>
+              <CardTitle>{item.title}</CardTitle>
+              <CardDescription className={`${currentSolatCategory == item.title ? "text-yellow-700 dark:text-yellow-300" : ""}`}>{item.description}</CardDescription>
+            </CardHeader>
+          </Card>
+        ))}
+      </div>
+
+      <div className="w-full max-w-md">
+        <Separator />
       </div>
 
       {/* Satu Pertiga Malam Section */}
@@ -320,7 +399,7 @@ function PrayerRow({
 }) {
   return (
     <Card
-      className={`flex flex-row justify-between items-center p-4 rounded-lg shadow-sm transition ${highlight
+      className={`flex flex-row justify-between items-center p-4 transition ${highlight
         ? "bg-yellow-100 dark:bg-yellow-700 font-semibold border-l-4 border-yellow-500 dark:border-yellow-300"
         : ""
         }`}
