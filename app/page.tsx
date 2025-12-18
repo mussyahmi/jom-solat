@@ -197,7 +197,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen flex flex-col items-center p-4 space-y-6">
       {/* Header */}
-      <div className="text-center">
+      <div className="text-center flex flex-col items-center">
         <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">
           {zone ?? <Skeleton className="h-6 w-64" />}
         </h1>
@@ -206,7 +206,7 @@ export default function HomePage() {
             {formatPrayerDates(currentTimes.gregorianDate, currentTimes.hijriDate)}
           </p>
         ) : (
-          <Skeleton className="h-4 w-64 mt-1" />
+          <Skeleton className="h-4 w-88 mt-2" />
         )}
       </div>
 
@@ -241,14 +241,14 @@ export default function HomePage() {
       </div>
 
       {/* Satu Pertiga Malam Section */}
-      {allTimes.today && selectedDay != 'yesterday' && (
+      {selectedDay != 'yesterday' && (
         <div className="w-full max-w-md">
           <Card className="p-4">
             <CardContent className="text-center">
               <p className="font-semibold">Satu Pertiga Malam Terakhir</p>
-              <p className="text-2xl font-bold text-gray-500 dark:text-gray-400">
-                {lastThird.start} AM - {lastThird.end} AM
-              </p>
+              <div className="text-2xl font-bold text-gray-500 dark:text-gray-400 flex items-center justify-center">
+                {allTimes.today ? lastThird.end : <Skeleton className="h-7 w-16 mx-2" />} AM - {allTimes.today ? lastThird.end : <Skeleton className="h-7 w-16 mx-2" />} AM
+              </div>
 
               <Dialog>
                 <DialogTrigger asChild>
@@ -260,35 +260,37 @@ export default function HomePage() {
                   <DialogHeader>
                     <DialogTitle>Cara Kiraan Satu Pertiga Malam Terakhir</DialogTitle>
                     <DialogDescription>
-                      <ol className="list-decimal list-inside space-y-2 text-sm">
-                        <li>
-                          <strong>Kenal pasti masa Maghrib ({selectedDay == 'today' ? 'Semalam' : 'Hari Ini'}) dan Subuh ({selectedDay == 'today' ? 'Hari Ini' : 'Esok'}):</strong>
-                          <br />
-                          Maghrib {allTimes.today?.maghrib} dan Subuh {allTimes.today?.subuh}.
-                        </li>
-                        <li>
-                          <strong>Kira tempoh malam:</strong>
-                          <br />
-                          Subuh - Maghrib = {(lastThird.subuh!.getTime() - lastThird.maghrib!.getTime()) / 60000} minit (~{Math.floor((lastThird.subuh!.getTime() - lastThird.maghrib!.getTime()) / 60 / 60000)} jam {Math.floor(((lastThird.subuh!.getTime() - lastThird.maghrib!.getTime()) / 60000) % 60)} minit).
-                        </li>
-                        <li>
-                          <strong>Bahagikan malam kepada 3 bahagian sama rata:</strong>
-                          <br />
-                          {(lastThird.thirdNightMs! / 60000).toFixed(0)} minit (~{Math.floor((lastThird.thirdNightMs! / 60000) / 60)} jam {Math.floor((lastThird.thirdNightMs! / 60000) % 60)} minit) setiap bahagian.
-                        </li>
-                        <li>
-                          <strong>Satu pertiga malam yang terakhir:</strong>
-                          <br />
-                          Tolak tempoh 1/3 malam dari Subuh: 6:02 AM - {(lastThird.thirdNightMs! / 60000).toFixed(0)} minit (~{Math.floor((lastThird.thirdNightMs! / 60000) / 60)} jam {Math.floor((lastThird.thirdNightMs! / 60000) % 60)} minit) ≈ {lastThird.start} AM.
-                        </li>
-                        <li>
-                          <strong>Formula ringkas:</strong>
-                          <br />
-                          (Subuh - Maghrib) ÷ 3 = tempoh 1/3 malam
-                          <br />
-                          1/3 malam terakhir = Subuh - tempoh 1/3 malam
-                        </li>
-                      </ol>
+                      {allTimes.today && (
+                        <ol className="list-decimal list-inside space-y-2 text-sm">
+                          <li>
+                            <strong>Kenal pasti masa Maghrib ({selectedDay == 'today' ? 'Semalam' : 'Hari Ini'}) dan Subuh ({selectedDay == 'today' ? 'Hari Ini' : 'Esok'}):</strong>
+                            <br />
+                            Maghrib {allTimes.today?.maghrib} dan Subuh {allTimes.today?.subuh}.
+                          </li>
+                          <li>
+                            <strong>Kira tempoh malam:</strong>
+                            <br />
+                            Subuh - Maghrib = {(lastThird.subuh!.getTime() - lastThird.maghrib!.getTime()) / 60000} minit (~{Math.floor((lastThird.subuh!.getTime() - lastThird.maghrib!.getTime()) / 60 / 60000)} jam {Math.floor(((lastThird.subuh!.getTime() - lastThird.maghrib!.getTime()) / 60000) % 60)} minit).
+                          </li>
+                          <li>
+                            <strong>Bahagikan malam kepada 3 bahagian sama rata:</strong>
+                            <br />
+                            {(lastThird.thirdNightMs! / 60000).toFixed(0)} minit (~{Math.floor((lastThird.thirdNightMs! / 60000) / 60)} jam {Math.floor((lastThird.thirdNightMs! / 60000) % 60)} minit) setiap bahagian.
+                          </li>
+                          <li>
+                            <strong>Satu pertiga malam yang terakhir:</strong>
+                            <br />
+                            Tolak tempoh 1/3 malam dari Subuh: 6:02 AM - {(lastThird.thirdNightMs! / 60000).toFixed(0)} minit (~{Math.floor((lastThird.thirdNightMs! / 60000) / 60)} jam {Math.floor((lastThird.thirdNightMs! / 60000) % 60)} minit) ≈ {lastThird.start} AM.
+                          </li>
+                          <li>
+                            <strong>Formula ringkas:</strong>
+                            <br />
+                            (Subuh - Maghrib) ÷ 3 = tempoh 1/3 malam
+                            <br />
+                            1/3 malam terakhir = Subuh - tempoh 1/3 malam
+                          </li>
+                        </ol>
+                      )}
                     </DialogDescription>
                   </DialogHeader>
                   <DialogClose asChild>
@@ -331,7 +333,7 @@ function PrayerRow({
           </span>
         )}
       </div>
-      <span>{value ?? <Skeleton className="h-4 w-16 dark:bg-zinc-700" />}</span>
+      <span>{value ?? <Skeleton className="h-5 w-16 dark:bg-zinc-700" />}</span>
     </Card>
   );
 }
