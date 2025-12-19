@@ -417,7 +417,7 @@ export default function HomePage() {
                     <DialogTitle>Cara Kiraan Satu Pertiga Malam Terakhir</DialogTitle>
                   </DialogHeader>
                   {allTimes.today && (
-                    <ol className="list-decimal list-inside space-y-2 text-sm">
+                    <ol className="list-decimal list-inside space-y-2 text-sm marker:font-bold">
                       <li>
                         <strong>Kenal pasti masa Maghrib ({selectedDay == 'today' ? 'Semalam' : 'Hari Ini'}) dan Subuh ({selectedDay == 'today' ? 'Hari Ini' : 'Esok'}):</strong>
                         <br />
