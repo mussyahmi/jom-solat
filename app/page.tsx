@@ -322,7 +322,7 @@ export default function HomePage() {
         )}
       </div>
 
-      <div className="flex justify-between w-full max-w-md">
+      <div className="flex justify-between items-center w-full max-w-md">
         {/* Day Selector Buttons */}
         <ButtonGroup>
           {["yesterday", "today", "tomorrow"].map((day) => (
@@ -352,7 +352,7 @@ export default function HomePage() {
             <SearchIcon /> Masjid
           </Button>
         ) : (
-          <Skeleton className="h-6 w-40" />
+          <Skeleton className="h-7 w-24" />
         )}
       </div>
 
