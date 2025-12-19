@@ -202,7 +202,7 @@ export default function HomePage() {
 
     setNextPrayer({ label: nextLabel, time: nextTime });
     setCurrentPrayer({ label: currentLabel!, time: currentTime! });
-    updateCurrentWaktuCategory(currentLabel!, currentTime!, nextTime!);
+    // updateCurrentWaktuCategory(currentLabel!, currentTime!, nextTime!);
 
     if (nextTime) setCountdown(formatCountdown(nextTime));
   };
