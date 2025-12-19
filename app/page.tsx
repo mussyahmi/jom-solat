@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { MapPin } from "lucide-react";
+import next from "next";
 
 type Prayer = {
   label: keyof PrayerTimes | null;
@@ -75,6 +76,13 @@ export default function HomePage() {
     const interval = setInterval(updateNextPrayer, 1000);
     return () => clearInterval(interval);
   }, [allTimes]);
+
+  useEffect(() => {
+    if (!allTimes.tomorrow) return;
+    if (nextPrayer.label == 'subuh' && nextPrayer.time == parseTime(allTimes.tomorrow.subuh) || true) {
+      setSelectedDay("tomorrow");
+    }
+  }, [nextPrayer.label]);
 
   const requestLocation = () => {
     if (!navigator.geolocation) {
