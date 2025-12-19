@@ -15,8 +15,10 @@ import {
   DialogDescription,
   DialogTrigger,
   DialogClose,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
+import { MapPin } from "lucide-react";
 
 type Prayer = {
   label: keyof PrayerTimes | null;
@@ -61,6 +63,7 @@ export default function HomePage() {
   const [currentPrayer, setCurrentPrayer] = useState<Prayer>({ label: null, time: null });
   const [nextPrayer, setNextPrayer] = useState<Prayer>({ label: null, time: null });
   const [currentSolatCategory, setCurrentSolatCategory] = useState("");
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
 
   useEffect(() => {
     requestLocation();
@@ -83,6 +86,11 @@ export default function HomePage() {
       async ({ coords }) => {
         try {
           const { latitude, longitude } = coords;
+
+          setCoords({
+            lat: latitude,
+            lng: longitude,
+          });
 
           const zoneRes = await fetch(
             `https://api.waktusolat.app/zones/${latitude}/${longitude}`
@@ -245,16 +253,64 @@ export default function HomePage() {
   return (
     <div className="min-h-screen flex flex-col items-center p-4 space-y-6">
       {/* Header */}
-      <div className="text-center flex flex-col items-center">
-        <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-          {zone ?? <Skeleton className="h-6 w-64" />}
-        </h1>
+      <div className="text-center flex flex-col items-center gap-2">
+        <div className="flex items-center">
+          <Dialog>
+            <DialogTrigger asChild>
+              {zone && (
+                <Button variant="ghost" size={"sm"}>
+                  <MapPin />
+                </Button>
+              )}
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Koordinat Lokasi Anda</DialogTitle>
+                <DialogDescription>
+                  Digunakan untuk menentukan zon waktu solat.
+                </DialogDescription>
+              </DialogHeader>
+              {coords && (
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span>Latitude</span>
+                    <span className="font-mono">{coords.lat.toFixed(6)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Longitude</span>
+                    <span className="font-mono">{coords.lng.toFixed(6)}</span>
+                  </div>
+                </div>
+              )}
+              <DialogFooter>
+                {coords && (
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      navigator.clipboard.writeText(
+                        `${coords.lat}, ${coords.lng}`
+                      );
+                      toast.success("Koordinat disalin");
+                    }}
+                  >
+                    Salin Koordinat
+                  </Button>
+                )}
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+          <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+            {zone ?? <Skeleton className="h-6 w-64" />}
+          </h1>
+        </div>
+
         {currentTimes ? (
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
             {formatPrayerDates(currentTimes.gregorianDate, currentTimes.hijriDate)}
           </p>
         ) : (
-          <Skeleton className="h-4 w-88 mt-2" />
+          <Skeleton className="h-4 w-88" />
         )}
       </div>
 
@@ -265,6 +321,7 @@ export default function HomePage() {
             key={day}
             variant={selectedDay === day ? "default" : "outline"}
             onClick={() => setSelectedDay(day as "yesterday" | "today" | "tomorrow")}
+            size={"sm"}
           >
             {day === "yesterday"
               ? "Semalam"
@@ -338,43 +395,38 @@ export default function HomePage() {
                 <DialogContent>
                   <DialogHeader>
                     <DialogTitle>Cara Kiraan Satu Pertiga Malam Terakhir</DialogTitle>
-                    <DialogDescription>
-                      {allTimes.today && (
-                        <ol className="list-decimal list-inside space-y-2 text-sm">
-                          <li>
-                            <strong>Kenal pasti masa Maghrib ({selectedDay == 'today' ? 'Semalam' : 'Hari Ini'}) dan Subuh ({selectedDay == 'today' ? 'Hari Ini' : 'Esok'}):</strong>
-                            <br />
-                            Maghrib {allTimes.today?.maghrib} dan Subuh {allTimes.today?.subuh}.
-                          </li>
-                          <li>
-                            <strong>Kira tempoh malam:</strong>
-                            <br />
-                            Subuh - Maghrib = {(lastThird.subuh!.getTime() - lastThird.maghrib!.getTime()) / 60000} minit (~{Math.floor((lastThird.subuh!.getTime() - lastThird.maghrib!.getTime()) / 60 / 60000)} jam {Math.floor(((lastThird.subuh!.getTime() - lastThird.maghrib!.getTime()) / 60000) % 60)} minit).
-                          </li>
-                          <li>
-                            <strong>Bahagikan malam kepada 3 bahagian sama rata:</strong>
-                            <br />
-                            {(lastThird.thirdNightMs! / 60000).toFixed(0)} minit (~{Math.floor((lastThird.thirdNightMs! / 60000) / 60)} jam {Math.floor((lastThird.thirdNightMs! / 60000) % 60)} minit) setiap bahagian.
-                          </li>
-                          <li>
-                            <strong>Satu pertiga malam yang terakhir:</strong>
-                            <br />
-                            Tolak tempoh 1/3 malam dari Subuh: 6:02 AM - {(lastThird.thirdNightMs! / 60000).toFixed(0)} minit (~{Math.floor((lastThird.thirdNightMs! / 60000) / 60)} jam {Math.floor((lastThird.thirdNightMs! / 60000) % 60)} minit) ≈ {lastThird.start} AM.
-                          </li>
-                          <li>
-                            <strong>Formula ringkas:</strong>
-                            <br />
-                            (Subuh - Maghrib) ÷ 3 = tempoh 1/3 malam
-                            <br />
-                            1/3 malam terakhir = Subuh - tempoh 1/3 malam
-                          </li>
-                        </ol>
-                      )}
-                    </DialogDescription>
                   </DialogHeader>
-                  <DialogClose asChild>
-                    <Button className="mt-4">Tutup</Button>
-                  </DialogClose>
+                  {allTimes.today && (
+                    <ol className="list-decimal list-inside space-y-2 text-sm">
+                      <li>
+                        <strong>Kenal pasti masa Maghrib ({selectedDay == 'today' ? 'Semalam' : 'Hari Ini'}) dan Subuh ({selectedDay == 'today' ? 'Hari Ini' : 'Esok'}):</strong>
+                        <br />
+                        Maghrib {allTimes.today?.maghrib} dan Subuh {allTimes.today?.subuh}.
+                      </li>
+                      <li>
+                        <strong>Kira tempoh malam:</strong>
+                        <br />
+                        Subuh - Maghrib = {(lastThird.subuh!.getTime() - lastThird.maghrib!.getTime()) / 60000} minit (~{Math.floor((lastThird.subuh!.getTime() - lastThird.maghrib!.getTime()) / 60 / 60000)} jam {Math.floor(((lastThird.subuh!.getTime() - lastThird.maghrib!.getTime()) / 60000) % 60)} minit).
+                      </li>
+                      <li>
+                        <strong>Bahagikan malam kepada 3 bahagian sama rata:</strong>
+                        <br />
+                        {(lastThird.thirdNightMs! / 60000).toFixed(0)} minit (~{Math.floor((lastThird.thirdNightMs! / 60000) / 60)} jam {Math.floor((lastThird.thirdNightMs! / 60000) % 60)} minit) setiap bahagian.
+                      </li>
+                      <li>
+                        <strong>Satu pertiga malam yang terakhir:</strong>
+                        <br />
+                        Tolak tempoh 1/3 malam dari Subuh: 6:02 AM - {(lastThird.thirdNightMs! / 60000).toFixed(0)} minit (~{Math.floor((lastThird.thirdNightMs! / 60000) / 60)} jam {Math.floor((lastThird.thirdNightMs! / 60000) % 60)} minit) ≈ {lastThird.start} AM.
+                      </li>
+                      <li>
+                        <strong>Formula ringkas:</strong>
+                        <br />
+                        (Subuh - Maghrib) ÷ 3 = tempoh 1/3 malam
+                        <br />
+                        1/3 malam terakhir = Subuh - tempoh 1/3 malam
+                      </li>
+                    </ol>
+                  )}
                 </DialogContent>
               </Dialog>
             </CardContent>
