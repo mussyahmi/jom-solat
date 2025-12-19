@@ -51,7 +51,7 @@ type WaktuCategory = {
 const KATEGORI_SOLAT: WaktuCategory[] = [
   { title: 'Waktu Fadhilat', description: 'Waktu paling awal lepas azan paling banyak pahala.' },
   { title: 'Waktu Ikhtiar', description: '15 minit selepas azan waktu yang kita boleh pilih.' },
-  { title: 'Waktu Jawaz', description: 'Waktu yang harus kita sembahyang. Contoh, solat Zuhur pada 3.30, waktu harus bukan haram.' },
+  { title: 'Waktu Jawaz', description: 'Waktu yang harus kita sembahyang. Contoh, solat Zohor pada 3.30, waktu harus bukan haram.' },
   { title: 'Waktu Karahah (waktu makruh)', description: '15 minit lagi nak masuk waktu solat lain. Pemilihan waktu ini dibenci oleh Allah SWT jika disengajakan.' },
   { title: 'Waktu Tahrim (waktu haram)', description: 'Hampir masuk waktu lain baru nak takbir. Perbuatan melambatkan waktu solat itu yang haram, namun sembahyangnya tidak haram.' },
 ];
