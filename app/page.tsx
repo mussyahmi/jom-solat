@@ -222,8 +222,8 @@ export default function HomePage() {
 
     if (elapsed <= fadhilat) waktuCategory = "Waktu Fadhilat";
     if (elapsed <= total / 2) waktuCategory = "Waktu Ikhtiar";
-    if (remaining <= karahah) waktuCategory = "Waktu Karahah";
-    if (remaining <= tahrim) waktuCategory = "Waktu Tahrim";
+    if (remaining <= karahah) waktuCategory = "Waktu Karahah (waktu makruh)";
+    if (remaining <= tahrim) waktuCategory = "Waktu Tahrim (waktu haram)";
 
     setCurrentWaktuCategory(currentLabel == "syuruk" ? "" : waktuCategory)
   }
