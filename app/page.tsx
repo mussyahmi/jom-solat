@@ -333,7 +333,7 @@ export default function HomePage() {
       </ButtonGroup>
 
       {/* Prayer List */}
-      <div className="w-full max-w-md space-y-3">
+      <div className="w-full max-w-md space-y-3 flex flex-col items-center">
         {["subuh", "syuruk", "zohor", "asar", "maghrib", "isyak"].map((label) => (
           <PrayerRow
             key={label}
@@ -343,6 +343,20 @@ export default function HomePage() {
             countdown={selectedDay === "today" && nextPrayer.label === label ? countdown : undefined}
           />
         ))}
+
+        {coords ? (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              window.open(`https://www.google.com/maps/search/masjid/@${coords.lat},${coords.lng},15z`, "_blank");
+            }}
+          >
+            Cari Masjid Terdekat
+          </Button>
+        ) : (
+          <Skeleton className="h-6 w-40" />
+        )}
       </div>
 
       <div className="w-full max-w-md">
@@ -366,7 +380,7 @@ export default function HomePage() {
 
       <div className="w-full max-w-md space-y-3">
         {KATEGORI_SOLAT.map((item) => (
-          <Card key={item.title} className={`${currentWaktuCategory == item.title
+          <Card key={item.title} className={`transition ${currentWaktuCategory == item.title
             ? "bg-yellow-100 dark:bg-yellow-700 font-semibold border-l-4 border-yellow-500 dark:border-yellow-300"
             : ""
             }`}>
@@ -457,7 +471,7 @@ function PrayerRow({
 }) {
   return (
     <Card
-      className={`flex flex-row justify-between items-center p-4 transition ${highlight
+      className={`flex flex-row justify-between items-center p-4 w-full transition ${highlight
         ? "bg-yellow-100 dark:bg-yellow-700 font-semibold border-l-4 border-yellow-500 dark:border-yellow-300"
         : ""
         }`}
