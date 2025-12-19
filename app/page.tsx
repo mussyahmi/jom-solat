@@ -202,7 +202,7 @@ export default function HomePage() {
 
     setNextPrayer({ label: nextLabel, time: nextTime });
     setCurrentPrayer({ label: currentLabel!, time: currentTime! });
-    // updateCurrentWaktuCategory(currentLabel!, currentTime!, nextTime!);
+    updateCurrentWaktuCategory(currentLabel!, currentTime!, nextTime!);
 
     if (nextTime) setCountdown(formatCountdown(nextTime));
   };
@@ -221,9 +221,9 @@ export default function HomePage() {
     let waktuCategory = "Waktu Jawaz";
 
     if (elapsed <= fadhilat) waktuCategory = "Waktu Fadhilat";
-    if (remaining <= tahrim) waktuCategory = "Waktu Tahrim";
-    if (remaining <= karahah) waktuCategory = "Waktu Karahah";
     if (elapsed <= total / 2) waktuCategory = "Waktu Ikhtiar";
+    if (remaining <= karahah) waktuCategory = "Waktu Karahah";
+    if (remaining <= tahrim) waktuCategory = "Waktu Tahrim";
 
     setCurrentWaktuCategory(currentLabel == "syuruk" ? "" : waktuCategory)
   }
