@@ -32,7 +32,7 @@ function useCompassHeading() {
       // Use webkitCompassHeading for iOS, alpha for Android
       const event = e as any;
       let newHeading: number | null = null;
-
+      
       if (event.webkitCompassHeading !== undefined) {
         newHeading = event.webkitCompassHeading;
       } else if (e.alpha !== null) {
@@ -47,7 +47,7 @@ function useCompassHeading() {
         // Handle wrapping around 0/360 to prevent spinning
         if (lastHeadingRef.current !== null) {
           const diff = newHeading - lastHeadingRef.current;
-
+          
           // If difference is > 180, we crossed the 0/360 boundary
           if (diff > 180) {
             newHeading -= 360;
@@ -156,9 +156,10 @@ export default function QiblaCard({ lat, lng }: QiblaCardProps) {
               from-zinc-100 to-zinc-200
               dark:from-zinc-800 dark:to-zinc-900
               border-4
-              ${isAligned
-                ? "border-emerald-400 shadow-[0_0_25px_rgba(16,185,129,0.6)]"
-                : "border-zinc-300 dark:border-zinc-700"
+              ${
+                isAligned
+                  ? "border-emerald-400 shadow-[0_0_25px_rgba(16,185,129,0.6)]"
+                  : "border-zinc-300 dark:border-zinc-700"
               }
               shadow-inner
               transition-all duration-700 ease-out
@@ -188,18 +189,18 @@ export default function QiblaCard({ lat, lng }: QiblaCardProps) {
             {/* Line from center to Qibla - rotates with compass */}
             <div
               className="absolute inset-0 flex items-center justify-center"
-              style={{
+              style={{ 
                 transform: `rotate(${qibla}deg)`,
               }}
             >
-              <div
-                className="absolute w-1 bg-emerald-500 dark:bg-emerald-400 opacity-60 rounded-full"
-                style={{
+              <div 
+                className="absolute w-1 bg-emerald-500 dark:bg-emerald-400 opacity-60 rounded-full" 
+                style={{ 
                   height: '104px',
                   top: '50%',
                   transform: 'translateY(-100%)',
                   transformOrigin: 'bottom center'
-                }}
+                }} 
               />
             </div>
           </div>
@@ -207,7 +208,7 @@ export default function QiblaCard({ lat, lng }: QiblaCardProps) {
           {/* Arrow - points to Qibla when inactive, points up when active */}
           <div
             className="absolute inset-0 flex items-center justify-center transition-all duration-700 ease-out"
-            style={{
+            style={{ 
               transform: `rotate(${heading !== null ? 0 : qibla}deg)`,
               opacity: 1
             }}
@@ -237,7 +238,7 @@ export default function QiblaCard({ lat, lng }: QiblaCardProps) {
 
           {isAligned && (
             <div className="text-emerald-600 dark:text-emerald-400 text-sm font-semibold mt-1">
-              ✔ Menghadap Kiblat
+              ✔ Menghadap Kiblat ({heading !== null ? heading.toFixed(1) : '0.0'}°)
             </div>
           )}
         </div>
