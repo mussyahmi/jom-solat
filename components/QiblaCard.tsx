@@ -61,10 +61,10 @@ function useCompassHeading() {
       }
     };
 
-    window.addEventListener("deviceorientationabsolute", handler, true);
+    window.addEventListener("deviceorientation", handler, true);
 
     return () => {
-      window.removeEventListener("deviceorientationabsolute" as any, handler);
+      window.removeEventListener("deviceorientation", handler);
     };
   }, []);
 
