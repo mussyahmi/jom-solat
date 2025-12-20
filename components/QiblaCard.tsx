@@ -37,7 +37,7 @@ function useCompassHeading() {
         newHeading = event.webkitCompassHeading;
       } else if (e.alpha !== null) {
         // For non-iOS devices, adjust alpha to get compass heading
-        newHeading = 360 - e.alpha;
+        newHeading = e.alpha;
       }
 
       if (newHeading !== null) {
@@ -61,13 +61,10 @@ function useCompassHeading() {
       }
     };
 
-    // Try absolute orientation first (more reliable)
-    window.addEventListener("deviceorientationabsolute" as any, handler, true);
-    window.addEventListener("deviceorientation", handler, true);
+    window.addEventListener("deviceorientationabsolute", handler, true);
 
     return () => {
       window.removeEventListener("deviceorientationabsolute" as any, handler);
-      window.removeEventListener("deviceorientation", handler);
     };
   }, []);
 
