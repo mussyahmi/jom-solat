@@ -428,7 +428,7 @@ export default function HomePage() {
         )}
       </div>
 
-      <div className="flex justify-between items-center w-full max-w-md">
+      <div className={`flex ${isManualMode ? "justify-center" : "justify-between"} items-center w-full max-w-md`}>
         {/* Day Selector Buttons */}
         <ButtonGroup>
           {["yesterday", "today", "tomorrow"].map((day) => (
@@ -447,16 +447,20 @@ export default function HomePage() {
           ))}
         </ButtonGroup>
 
-        {coords && (
-          <Button
-            variant="link"
-            size="sm"
-            onClick={() => {
-              window.open(`https://www.google.com/maps/search/masjid/@${coords.lat},${coords.lng},15z`, "_blank");
-            }}
-          >
-            <SearchIcon /> Masjid
-          </Button>
+        {!isManualMode && (
+          coords ? (
+            <Button
+              variant="link"
+              size="sm"
+              onClick={() => {
+                window.open(`https://www.google.com/maps/search/masjid/@${coords.lat},${coords.lng},15z`, "_blank");
+              }}
+            >
+              <SearchIcon /> Masjid
+            </Button>
+          ) : (
+            <Skeleton className="h-7 w-24" />
+          )
         )}
       </div>
 
@@ -506,82 +510,86 @@ export default function HomePage() {
         ))}
       </div>
 
-      {coords && (
-        <>
-          <div className="w-full max-w-md">
-            <Separator />
-          </div>
+      {
+        coords && (
+          <>
+            <div className="w-full max-w-md">
+              <Separator />
+            </div>
 
-          <div className="w-full max-w-md">
-            <QiblaCard lat={coords.lat} lng={coords.lng} />
-          </div>
-        </>
-      )}
+            <div className="w-full max-w-md">
+              <QiblaCard lat={coords.lat} lng={coords.lng} />
+            </div>
+          </>
+        )
+      }
 
       <div className="w-full max-w-md">
         <Separator />
       </div>
 
       {/* Satu Pertiga Malam Section */}
-      {selectedDay != 'yesterday' && (
-        <div className="w-full max-w-md">
-          <Card className="p-4">
-            <CardContent className="text-center">
-              <p className="font-semibold">Satu Pertiga Malam Terakhir</p>
-              <div className="text-2xl font-bold text-gray-500 dark:text-gray-400 flex items-center justify-center">
-                {allTimes.today ? lastThird.start : <Skeleton className="h-7 w-16 mx-2" />} AM - {allTimes.today ? lastThird.end : <Skeleton className="h-7 w-16 mx-2" />} AM
-              </div>
+      {
+        selectedDay != 'yesterday' && (
+          <div className="w-full max-w-md">
+            <Card className="p-4">
+              <CardContent className="text-center">
+                <p className="font-semibold">Satu Pertiga Malam Terakhir</p>
+                <div className="text-2xl font-bold text-gray-500 dark:text-gray-400 flex items-center justify-center">
+                  {allTimes.today ? lastThird.start : <Skeleton className="h-7 w-16 mx-2" />} AM - {allTimes.today ? lastThird.end : <Skeleton className="h-7 w-16 mx-2" />} AM
+                </div>
 
-              <Dialog>
-                <DialogTrigger asChild>
-                  {coords && (
-                    <Button variant="secondary" size="sm" className="mt-4">
-                      Cara Kiraan
-                    </Button>
-                  )}
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Cara Kiraan Satu Pertiga Malam Terakhir</DialogTitle>
-                  </DialogHeader>
-                  {allTimes.today && (
-                    <ol className="list-decimal list-inside space-y-2 text-sm marker:font-bold">
-                      <li>
-                        <strong>Kenal pasti masa Maghrib ({selectedDay == 'today' ? 'Semalam' : 'Hari Ini'}) dan Subuh ({selectedDay == 'today' ? 'Hari Ini' : 'Esok'}):</strong>
-                        <br />
-                        Maghrib {allTimes.today?.maghrib} dan Subuh {allTimes.today?.subuh}.
-                      </li>
-                      <li>
-                        <strong>Kira tempoh malam:</strong>
-                        <br />
-                        Subuh - Maghrib = {(lastThird.subuh!.getTime() - lastThird.maghrib!.getTime()) / 60000} minit (~{Math.floor((lastThird.subuh!.getTime() - lastThird.maghrib!.getTime()) / 60 / 60000)} jam {Math.floor(((lastThird.subuh!.getTime() - lastThird.maghrib!.getTime()) / 60000) % 60)} minit).
-                      </li>
-                      <li>
-                        <strong>Bahagikan malam kepada 3 bahagian sama rata:</strong>
-                        <br />
-                        {(lastThird.thirdNightMs! / 60000).toFixed(0)} minit (~{Math.floor((lastThird.thirdNightMs! / 60000) / 60)} jam {Math.floor((lastThird.thirdNightMs! / 60000) % 60)} minit) setiap bahagian.
-                      </li>
-                      <li>
-                        <strong>Satu pertiga malam yang terakhir:</strong>
-                        <br />
-                        Tolak tempoh 1/3 malam dari Subuh: 6:02 AM - {(lastThird.thirdNightMs! / 60000).toFixed(0)} minit (~{Math.floor((lastThird.thirdNightMs! / 60000) / 60)} jam {Math.floor((lastThird.thirdNightMs! / 60000) % 60)} minit) ≈ {lastThird.start} AM.
-                      </li>
-                      <li>
-                        <strong>Formula ringkas:</strong>
-                        <br />
-                        (Subuh - Maghrib) ÷ 3 = tempoh 1/3 malam
-                        <br />
-                        1/3 malam terakhir = Subuh - tempoh 1/3 malam
-                      </li>
-                    </ol>
-                  )}
-                </DialogContent>
-              </Dialog>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-    </div>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    {coords && (
+                      <Button variant="secondary" size="sm" className="mt-4">
+                        Cara Kiraan
+                      </Button>
+                    )}
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Cara Kiraan Satu Pertiga Malam Terakhir</DialogTitle>
+                    </DialogHeader>
+                    {allTimes.today && (
+                      <ol className="list-decimal list-inside space-y-2 text-sm marker:font-bold">
+                        <li>
+                          <strong>Kenal pasti masa Maghrib ({selectedDay == 'today' ? 'Semalam' : 'Hari Ini'}) dan Subuh ({selectedDay == 'today' ? 'Hari Ini' : 'Esok'}):</strong>
+                          <br />
+                          Maghrib {allTimes.today?.maghrib} dan Subuh {allTimes.today?.subuh}.
+                        </li>
+                        <li>
+                          <strong>Kira tempoh malam:</strong>
+                          <br />
+                          Subuh - Maghrib = {(lastThird.subuh!.getTime() - lastThird.maghrib!.getTime()) / 60000} minit (~{Math.floor((lastThird.subuh!.getTime() - lastThird.maghrib!.getTime()) / 60 / 60000)} jam {Math.floor(((lastThird.subuh!.getTime() - lastThird.maghrib!.getTime()) / 60000) % 60)} minit).
+                        </li>
+                        <li>
+                          <strong>Bahagikan malam kepada 3 bahagian sama rata:</strong>
+                          <br />
+                          {(lastThird.thirdNightMs! / 60000).toFixed(0)} minit (~{Math.floor((lastThird.thirdNightMs! / 60000) / 60)} jam {Math.floor((lastThird.thirdNightMs! / 60000) % 60)} minit) setiap bahagian.
+                        </li>
+                        <li>
+                          <strong>Satu pertiga malam yang terakhir:</strong>
+                          <br />
+                          Tolak tempoh 1/3 malam dari Subuh: 6:02 AM - {(lastThird.thirdNightMs! / 60000).toFixed(0)} minit (~{Math.floor((lastThird.thirdNightMs! / 60000) / 60)} jam {Math.floor((lastThird.thirdNightMs! / 60000) % 60)} minit) ≈ {lastThird.start} AM.
+                        </li>
+                        <li>
+                          <strong>Formula ringkas:</strong>
+                          <br />
+                          (Subuh - Maghrib) ÷ 3 = tempoh 1/3 malam
+                          <br />
+                          1/3 malam terakhir = Subuh - tempoh 1/3 malam
+                        </li>
+                      </ol>
+                    )}
+                  </DialogContent>
+                </Dialog>
+              </CardContent>
+            </Card>
+          </div>
+        )
+      }
+    </div >
   );
 }
 
