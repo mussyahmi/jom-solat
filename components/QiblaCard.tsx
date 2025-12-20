@@ -64,7 +64,7 @@ function useCompassHeading() {
     window.addEventListener("deviceorientation", handler, true);
 
     return () => {
-      window.removeEventListener("deviceorientation", handler);
+      window.removeEventListener("deviceorientation", handler, true);
     };
   }, []);
 
