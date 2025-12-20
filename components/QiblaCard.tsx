@@ -102,6 +102,10 @@ export default function QiblaCard({ lat, lng }: QiblaCardProps) {
   const heading = useCompassHeading();
   const [motionGranted, setMotionGranted] = useState(false);
   const alignedRef = useRef(false);
+  const isAndroid =
+    typeof navigator !== "undefined" &&
+    /Android/i.test(navigator.userAgent);
+
 
   const qibla = getQiblaBearing(lat, lng);
 
@@ -238,6 +242,13 @@ export default function QiblaCard({ lat, lng }: QiblaCardProps) {
             </div>
           )}
         </div>
+
+        {isAndroid && (
+          <div className="text-xs text-amber-600 dark:text-amber-400 text-center max-w-xs">
+            Nota: Sesetengah peranti Android mungkin mengalami isu ketepatan kompas.
+            Kami sedang dalam proses membaikinya.
+          </div>
+        )}
 
         {/* Permission */}
         {!motionGranted && (
