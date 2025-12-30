@@ -98,6 +98,8 @@ export default function HomePage() {
   }, [allTimes, selectedDay, nextPrayer.time]);
 
   const requestLocation = () => {
+    setIsManualMode(false);
+    
     if (!navigator.geolocation) {
       toast.error("Geolokasi tidak disokong oleh pelayar anda.");
       setIsManualMode(true);
@@ -192,6 +194,7 @@ export default function HomePage() {
   };
 
   const handleZoneSelect = async (zoneData: any) => {
+    setIsManualMode(true);
     setCoords(null); // Clear coords in manual mode
     await loadZoneData(zoneData.jakimCode, `${zoneData.jakimCode} · ${zoneData.daerah}`);
   };
